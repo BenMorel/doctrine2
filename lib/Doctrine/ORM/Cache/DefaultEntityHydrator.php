@@ -23,10 +23,8 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\EntityCacheEntry;
 
 /**
  * Default hydrator cache for entities
@@ -146,7 +144,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 return null;
             }
 
-            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, $hints);
+            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
         }
 
         if ($entity !== null) {

@@ -24,8 +24,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
  * Default hydrator cache for collections
@@ -91,7 +89,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
                 return null;
             }
 
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection) {

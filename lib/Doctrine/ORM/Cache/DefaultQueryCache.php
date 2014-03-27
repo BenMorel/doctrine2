@@ -25,10 +25,7 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Cache\QueryCacheEntry;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Cache\CacheException;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
@@ -131,7 +128,8 @@ class DefaultQueryCache implements QueryCache
             }
 
             if ( ! $hasRelation) {
-                $result[$index]  = $this->uow->createEntity($entityEntry->class, $entityEntry->data, self::$hints);
+
+                $result[$index]  = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
 
                 continue;
             }
@@ -154,7 +152,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
 
                     if ($this->cacheLogger !== null) {
                         $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKey);
@@ -181,7 +179,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->data, self::$hints);
+                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
 
                     $collection->hydrateSet($assocIndex, $element);
 
